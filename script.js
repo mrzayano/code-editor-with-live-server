@@ -1,39 +1,51 @@
-const htmlTextarea = document.getElementById('html');
-const cssTextarea = document.getElementById('css');
-const jsTextarea = document.getElementById('js');
-const outputFrame = document.getElementById('output');
-const tabButtons = document.querySelectorAll('.tab-btn');
-const tabs = document.querySelectorAll('.tab');
+document.addEventListener('DOMContentLoaded', function () {
+    function runCode() {
+        let htmlCode = document.getElementById('html-code');
+        let cssCode = document.getElementById('css-code');
+        let jsCode = document.getElementById('js-code');
+        let output = document.getElementById('output');
+        let consoleFrame = document.getElementById('consoleFrame');
 
-// Function to update the output
-function updateOutput() {
-  const htmlCode = htmlTextarea.value;
-  const cssCode = `<style>${cssTextarea.value}</style>`;
-  const jsCode = `<script>${jsTextarea.value}</script>`;
+        output.contentDocument.body.innerHTML = htmlCode.value + '<style>' + cssCode.value + '</style>';
 
-  const outputHTML = `${htmlCode}${cssCode}<body>${jsCode}</body>`;
-  outputFrame.contentDocument.body.innerHTML = outputHTML;
-}
+        // Create a new document for console output
+        let consoleDocument = consoleFrame.contentWindow.document;
+        consoleDocument.open();
+        consoleDocument.write('<html><head><title>Console Output</title></head><body><div id="console"></div></body></html>');
+        consoleDocument.close();
 
-// Event listeners for input changes
-htmlTextarea.addEventListener('input', updateOutput);
-cssTextarea.addEventListener('input', updateOutput);
-jsTextarea.addEventListener('input', updateOutput);
+        // Redefine console.log inside the iframe
+        output.contentWindow.console.log = function (message) {
+            let consoleOutput = consoleDocument.getElementById('console');
+            consoleOutput.innerHTML += `<div>${message}</div>`;
+        };
 
-// Event listener for tab buttons
-tabButtons.forEach(button => {
-  button.addEventListener('click', () => {
-    const tabType = button.getAttribute('data-type');
-    tabs.forEach(tab => {
-      tab.classList.remove('active');
-      if (tab.getAttribute('id') === tabType) {
-        tab.classList.add('active');
-      }
+        // Apply styles to the console iframe
+        let consoleStyles = `
+            <style>
+                body {
+                    color: #ffffff;
+                    font-family: Arial, sans-serif;
+                }
+                #console div {
+                    padding: 4px;
+                }
+            </style>
+        `;
+        consoleDocument.head.innerHTML += consoleStyles;
+
+        try {
+            output.contentWindow.eval(jsCode.value);
+        } catch (error) {
+            console.error('JavaScript Error:', error);
+        }
+    }
+
+    const runButton = document.getElementById('runButton');
+    runButton.addEventListener('click', runCode);
+
+    const textAreas = document.querySelectorAll('.tab');
+    textAreas.forEach(textArea => {
+        textArea.addEventListener('keyup', runCode);
     });
-    tabButtons.forEach(btn => btn.classList.remove('active'));
-    button.classList.add('active');
-    updateOutput();
-  });
 });
-
-updateOutput();
