@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Code Editor</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="editor-container">
+    <div class="editor">
+      <div class="editor-header">
+        <span class="tab-btn active" data-type="html">HTML</span>
+        <span class="tab-btn" data-type="css">CSS</span>
+        <span class="tab-btn" data-type="js">JS</span>
+      </div>
+      <div class="editor-tabs">
+        <textarea id="html" class="tab active" placeholder="Enter HTML code here"></textarea>
+        <textarea id="css" class="tab" placeholder="Enter CSS code here"></textarea>
+        <textarea id="js" class="tab" placeholder="Enter JS code here"></textarea>
+      </div>
+      <div class="output-container">
+        <iframe id="output" class="output"></iframe>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
